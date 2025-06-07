@@ -1,7 +1,8 @@
 services:
   - type: web
-    name: nodeee-app
+    name: fareno-universe-app
     env: node
     buildCommand: npm install
     startCommand: node server.js
-    repo: https://github.com/Koniza237/Fareno-universe
+    repo: https://github.com/Koniza237/Fareno-universe.git
+    branch: master
