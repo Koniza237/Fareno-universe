@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="FARENOUNIVERSITY.jpg" type="image/x-icon">
+    <link rel="shortcut icon" href="/FARENOUNIVERSITY.jpg" type="image/x-icon">
     <title>Tableau de Bord Étudiant - Fareno University</title>
     <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.production.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.production.min.js"></script>
@@ -59,9 +59,11 @@
 <body>
     <div id="background-image"></div>
     <div id="root"></div>
-    <div class="fixed bottom-4 right-4 text-white text-sm">01:56 AM WAT, Dimanche 08 Juin 2025</div>
+    <div class="fixed bottom-4 right-4 text-white text-sm">03:34 AM WAT, Dimanche 08 Juin 2025</div>
 
     <script type="text/babel">
+        const API_BASE_URL = window.location.hostname === 'localhost' ? 'http://localhost:10000' : window.location.origin;
+
         function StudentDashboard() {
             const [activeSection, setActiveSection] = React.useState('messagerie');
             const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
@@ -78,7 +80,7 @@
             React.useEffect(() => {
                 const fetchUserData = async () => {
                     try {
-                        const response = await fetch('/api/users/students');
+                        const response = await fetch(`${API_BASE_URL}/api/users/students`);
                         if (!response.ok) throw new Error('Erreur lors du chargement de students.json');
                         const data = await response.json();
 
@@ -143,7 +145,7 @@
 
             const fetchMessages = async () => {
                 try {
-                    const response = await fetch('/api/messages');
+                    const response = await fetch(`${API_BASE_URL}/api/messages`);
                     if (!response.ok) throw new Error('Erreur lors du chargement des messages');
                     const data = await response.json();
                     const formattedMessages = data.map((msg, index) => ({
@@ -160,7 +162,7 @@
 
             const fetchDocuments = async () => {
                 try {
-                    const response = await fetch('/api/documents');
+                    const response = await fetch(`${API_BASE_URL}/api/documents`);
                     if (!response.ok) throw new Error('Erreur lors du chargement des documents');
                     const data = await response.json();
                     setDocuments(data);
@@ -172,9 +174,9 @@
 
             const handleLogout = async () => {
                 try {
-                    await fetch('/api/logout', { method: 'POST' });
+                    await fetch(`${API_BASE_URL}/api/logout`, { method: 'POST' });
                     localStorage.removeItem('connectstudent');
-                    window.location.href = 'choix.html';
+                    window.location.href = '/choix.html';
                 } catch (err) {
                     console.error('Erreur lors de la déconnexion:', err);
                 }
@@ -182,7 +184,7 @@
 
             const handleDownload = async (documentId, documentName) => {
                 try {
-                    const response = await fetch(`/api/documents/${documentId}/download`);
+                    const response = await fetch(`${API_BASE_URL}/api/documents/${documentId}/download`);
                     if (!response.ok) throw new Error('Erreur lors du téléchargement');
                     const blob = await response.blob();
                     const url = window.URL.createObjectURL(blob);
@@ -210,7 +212,7 @@
                 setAiError('');
                 setAiResponse('');
                 try {
-                    const response = await fetch('/api/ai', {
+                    const response = await fetch(`${API_BASE_URL}/api/ai`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ prompt: aiInput })
@@ -338,7 +340,7 @@
             };
 
             const handleAideClick = () => {
-                window.location.href = 'aideetu.html';
+                window.location.href = '/aideetu.html';
             };
 
             return (
@@ -350,10 +352,7 @@
                                 <button
                                     key={section}
                                     className={`w-full text-left py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 ${activeSection === section ? 'bg-blue-700' : ''}`}
-                                    onClick={() => {
-                                        setActiveSection(section);
-                                        if (window.innerWidth < 768) setIsSidebarOpen(false); // Masquer la sidebar sur mobile après clic
-                                    }}
+                                    onClick={() => setActiveSection(section)}
                                 >
                                     {section === 'messagerie' ? 'Messagerie 💬' :
                                      section === 'documents' ? 'Documents 📄' :
@@ -362,10 +361,7 @@
                             ))}
                             <button
                                 className={`w-full text-left py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 ${activeSection === 'aide' ? 'bg-blue-700' : ''}`}
-                                onClick={() => {
-                                    handleAideClick();
-                                    if (window.innerWidth < 768) setIsSidebarOpen(false); // Masquer la sidebar sur mobile après clic
-                                }}
+                                onClick={handleAideClick}
                             >
                                 Aide ❓
                             </button>
