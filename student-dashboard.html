@@ -59,12 +59,12 @@
 <body>
     <div id="background-image"></div>
     <div id="root"></div>
-    <div class="fixed bottom-4 right-4 text-white text-sm">01:25 AM WAT, Dimanche 08 Juin 2025</div>
+    <div class="fixed bottom-4 right-4 text-white text-sm">01:56 AM WAT, Dimanche 08 Juin 2025</div>
 
     <script type="text/babel">
         function StudentDashboard() {
             const [activeSection, setActiveSection] = React.useState('messagerie');
-            const [isSidebarOpen, setIsSidebarOpen] = React.useState(false); // Masqué par défaut sur mobile
+            const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
             const [user, setUser] = React.useState(null);
             const [messages, setMessages] = React.useState([]);
             const [documents, setDocuments] = React.useState([]);
@@ -350,7 +350,10 @@
                                 <button
                                     key={section}
                                     className={`w-full text-left py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 ${activeSection === section ? 'bg-blue-700' : ''}`}
-                                    onClick={() => setActiveSection(section)}
+                                    onClick={() => {
+                                        setActiveSection(section);
+                                        if (window.innerWidth < 768) setIsSidebarOpen(false); // Masquer la sidebar sur mobile après clic
+                                    }}
                                 >
                                     {section === 'messagerie' ? 'Messagerie 💬' :
                                      section === 'documents' ? 'Documents 📄' :
@@ -359,7 +362,10 @@
                             ))}
                             <button
                                 className={`w-full text-left py-2.5 px-4 rounded transition duration-200 hover:bg-blue-700 ${activeSection === 'aide' ? 'bg-blue-700' : ''}`}
-                                onClick={handleAideClick}
+                                onClick={() => {
+                                    handleAideClick();
+                                    if (window.innerWidth < 768) setIsSidebarOpen(false); // Masquer la sidebar sur mobile après clic
+                                }}
                             >
                                 Aide ❓
                             </button>
