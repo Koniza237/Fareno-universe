@@ -5,8 +5,4 @@ services:
     buildCommand: npm install
     startCommand: node server.js
     repo: https://github.com/Koniza237/Fareno-universe.git
-<<<<<<< HEAD
     branch: master
-=======
-    branch: master
->>>>>>> 996b54234b127d07e29d2556d2527c28c70febdc

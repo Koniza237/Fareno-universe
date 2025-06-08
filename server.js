@@ -386,7 +386,7 @@ app.delete('/api/documents/:id', async (req, res) => {
         if (!document) {
             return res.status(404).json({ error: 'Document non trouvé' });
         }
-        const filePath = path.join(UploadsDir, document.fileName);
+        const filePath = path.join(uploadsDir, document.fileName);
         await fs.unlink(filePath).catch(err => {
             console.error('Erreur lors de la suppression du fichier:', err.message);
         });
@@ -668,5 +668,5 @@ app.use((req, res, next) => {
     res.status(404).json({ error: 'Route non trouvée' });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => console.log(`Serveur démarré sur http://localhost:${PORT}`));
