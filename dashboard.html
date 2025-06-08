@@ -54,7 +54,7 @@
     <script type="text/babel">
         function Dashboard() {
             const [activeSection, setActiveSection] = React.useState('dashboard');
-            const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+            const [isSidebarOpen, setIsSidebarOpen] = React.useState(false); // Masqué par défaut sur mobile
             const [activeTab, setActiveTab] = React.useState('teachers');
             const [showModal, setShowModal] = React.useState(false);
             const [modalType, setModalType] = React.useState('');
@@ -747,3 +747,5 @@
 
         ReactDOM.render(<Dashboard />, document.getElementById('root'));
     </script>
+</body>
+</html>
