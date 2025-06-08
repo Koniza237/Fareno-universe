@@ -59,11 +59,12 @@
 <body>
     <div id="background-image"></div>
     <div id="root"></div>
+    <div class="fixed bottom-4 right-4 text-white text-sm">01:25 AM WAT, Dimanche 08 Juin 2025</div>
 
     <script type="text/babel">
         function StudentDashboard() {
             const [activeSection, setActiveSection] = React.useState('messagerie');
-            const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+            const [isSidebarOpen, setIsSidebarOpen] = React.useState(false); // Masqué par défaut sur mobile
             const [user, setUser] = React.useState(null);
             const [messages, setMessages] = React.useState([]);
             const [documents, setDocuments] = React.useState([]);
