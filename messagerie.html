@@ -44,10 +44,6 @@
             flex-direction: column;
             gap: 5px;
         }
-        .message-bubble-teacher {
-            background-color: #E5E7EB;
-            align-self: flex-start;
-        }
         .chat-area {
             flex: 1;
             overflow-y: auto;
@@ -84,28 +80,15 @@
 
             const fetchMessages = async () => {
                 try {
-                    console.log('Envoi de la requête GET /api/messages');
-                    const response = await fetch('http://localhost:10000/api/messages');
+                    console.log('Envoi de la requête GET http://localhost:3000/api/messages');
+                    const response = await fetch('http://localhost:3000/api/messages');
                     if (!response.ok) {
                         const errorText = await response.text();
                         throw new Error(`Erreur HTTP ${response.status}: ${errorText}`);
                     }
                     const data = await response.json();
-                    console.log('Messages étudiants reçus:', data);
-
-                    const responseEns = await fetch('http://localhost:10000/api/messages-ens');
-                    if (!responseEns.ok) {
-                        const errorText = await responseEns.text();
-                        throw new Error(`Erreur HTTP ${responseEns.status}: ${errorText}`);
-                    }
-                    const dataEns = await responseEns.json();
-                    console.log('Messages enseignants reçus:', dataEns);
-
-                    const allMessages = [
-                        ...data.map((msg, index) => ({ ...msg, type: 'students', index })),
-                        ...dataEns.map((msg, index) => ({ ...msg, type: 'teachers', index }))
-                    ].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-                    setMessages(allMessages);
+                    console.log('Messages reçus:', data);
+                    setMessages(data);
                     setError('');
                 } catch (err) {
                     console.error('Erreur lors du chargement des messages:', err.message);
@@ -121,7 +104,7 @@
                 setIsLoading(true);
                 setError('');
                 try {
-                    const endpoint = type === 'students' ? 'http://localhost:10000/api/messages-etu' : 'http://localhost:10000/api/messages-ens';
+                    const endpoint = type === 'students' ? 'http://localhost:3000/api/messages-etu' : 'http://localhost:3000/api/messages-ens';
                     console.log(`Envoi du message à ${endpoint}:`, { content: message });
                     const response = await fetch(endpoint, {
                         method: 'POST',
@@ -134,7 +117,7 @@
                     }
                     const newMessage = await response.json();
                     console.log('Message envoyé:', newMessage);
-                    setMessages(prev => [...prev, { ...newMessage, index: prev.filter(m => m.type === type).length }].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp)));
+                    setMessages(prev => [...prev, { ...newMessage, id: `${type === 'students' ? 'stu' : 'tea'}-${prev.length}` }]);
                     setMessage('');
                 } catch (err) {
                     console.error('Erreur lors de l\'envoi du message:', err.message);
@@ -144,11 +127,11 @@
                 }
             };
 
-            const handleDeleteMessage = async (type, index) => {
+            const handleDeleteMessage = async (id, type, index) => {
                 setIsLoading(true);
                 setError('');
                 try {
-                    const endpoint = `http://localhost:10000/api/messages/${type}/${index}`;
+                    const endpoint = `http://localhost:3000/api/messages/${type}/${index}`;
                     console.log(`Suppression du message à ${endpoint}`);
                     const response = await fetch(endpoint, {
                         method: 'DELETE',
@@ -158,8 +141,8 @@
                         const errorText = await response.text();
                         throw new Error(`Erreur HTTP ${response.status}: ${errorText}`);
                     }
-                    console.log('Message supprimé:', { type, index });
-                    setMessages(prev => prev.filter(msg => !(msg.type === type && msg.index === index)));
+                    console.log('Message supprimé:', { id, type, index });
+                    setMessages(prev => prev.filter(msg => msg.id !== id));
                 } catch (err) {
                     console.error('Erreur lors de la suppression du message:', err.message);
                     setError('Impossible de supprimer le message: ' + err.message);
@@ -171,7 +154,7 @@
             const handleKeyPress = (e) => {
                 if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
-                    handleSendMessage('students');
+                    // Ne rien faire ici, l'envoi se fait via les boutons
                 }
             };
 
@@ -184,18 +167,15 @@
                     <div className="flex-1 flex flex-col chat-container">
                         <div className="chat-area" ref={chatRef}>
                             {messages.length > 0 ? (
-                                messages.map((msg, i) => (
-                                    <div
-                                        key={`${msg.type}-${msg.index}`}
-                                        className={`message-bubble ${msg.type === 'teachers' ? 'message-bubble-teacher' : ''}`}
-                                    >
+                                messages.map((msg) => (
+                                    <div key={msg.id} className="message-bubble">
                                         <div>{msg.content}</div>
                                         <div className="text-xs text-gray-500 mt-1">
                                             Envoyé à {msg.type === 'students' ? 'Étudiants' : 'Enseignants'} le {new Date(msg.timestamp).toLocaleString('fr-FR')}
                                         </div>
                                         <button
                                             className="bg-red-500 text-white px-2 py-1 rounded-lg hover:bg-red-600 text-xs mt-2"
-                                            onClick={() => handleDeleteMessage(msg.type, msg.index)}
+                                            onClick={() => handleDeleteMessage(msg.id, msg.type, msg.id.split('-')[1])}
                                             disabled={isLoading}
                                         >
                                             Supprimer
